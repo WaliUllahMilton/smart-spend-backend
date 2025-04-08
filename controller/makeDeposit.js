@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Account from "../models/Account.js";
 import Deposit from "../models/Deposit.js";
 
@@ -38,5 +39,32 @@ export const makeDeposit = async (req,res)=>{
                 })
     } catch (error) {
         console.log(error)
+    }
+}
+export const getDeposit = async(req,res)=>{
+    const {accountInfo} = req.body;
+    try {
+        if(!mongoose.Types.ObjectId.isValid(accountInfo)){
+            return res.status(400).json({
+                success : false,
+                message : "objectId is not valid"
+            })
+        }
+        const findDepositByUser = await Deposit.find({
+            accountInfo : accountInfo
+        })
+        if(!findDepositByUser.length>0){
+            return res.status(404).json({
+                success : false,
+                message : "no data found"
+            })
+        }
+        return res.status(200).json({
+            success : true,
+            message : "data found",
+            data : findDepositByUser
+        })
+    } catch (error) {
+        console.log(error);
     }
 }
